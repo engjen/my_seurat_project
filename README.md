@@ -77,8 +77,21 @@ In addition: Warning messages:
 
 21. yes, the ridge plot would be good because the violin plots are overplotted with the black stripplot on top. I want to keep seeing the sub-pools in QC violin/ridge plots of percent MT
 
-22. lets put those suggestions on pause and summarize the qc and filtering that we have done into a document that explains the project set up, git, r installl and project setup, data download with rsync, code steps (specific to PARSE) for non-computational biologists so they can do this on their own.
+22. should we filter by min genes? can we make a countour plot of the scatterplots? can you explain the logic for filtering min/max genes/n_feature and/or min/max UMI/counts
 
+23. i want to also plot a violin aggrgating all the sub-pools but having 3 violins with ["n_genes_by_counts", "total_counts", "pct_counts_mt"], and the dotted thresholds applied
+
+24. do i also have to filter the genes by min cells?
+
+25. yes, add x genes and x cells removed lines of code
+
+26. summary_vln is in one column instead of a row. can we get rid of Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')  Rasterizing points since number of points exceeds 100,000.
+
+To disable this behavior set `raster=FALSE` Warning: Default search for "data" layer in "RNA" assay yielded no results; utilizing "counts" layer instead.
+
+27. i need to know which line of code is generating the warnings. also, is h5ad compatible with r and pytnon. what about .h5?
+
+28. yes can you create a new conda environment for this project, a jupyter notebook, and code for verifying metadata and downstream clustering and cell type analysis?
 
 ## Terminal linux commands
 
