@@ -43,11 +43,30 @@ for (s_name in names(thresholds)) {
     geom_hline(yintercept = c(conf$min_feat, conf$max_feat), color="red", linetype="dashed") +
     theme_bw()
   
-  p2 <- VlnPlot(obj, features = "percent.mt") + 
+  # A much cleaner Violin plot for 1M+ cells
+  p2 <- VlnPlot(obj, features = "percent.mt", pt.size = 0) + 
     geom_hline(yintercept = conf$max_mt, color="red", linetype="dashed")
   
   ggsave(paste0("figures/", s_name, "_qc_scatter.png"), p1, width = 8, height = 6)
   ggsave(paste0("figures/", s_name, "_mito_vln.png"), p2, width = 6, height = 6)
+  
+  # 1. Ridge Plot for Mitochondrial % (The most important QC check)
+  # we use 'idents' to show the sub-pools automatically
+  p3 <- RidgePlot(obj, features = "percent.mt", ncol = 1) +
+    geom_vline(xintercept = conf$max_mt, color="red", linetype="dashed") +
+    theme_minimal() +
+    theme(legend.position = "none") +
+    ggtitle(paste(s_name, "Mito % by Sub-pool"))
+  
+  # 2. Ridge Plot for nFeature (Complexity)
+  p4 <- RidgePlot(obj, features = "nFeature_RNA", ncol = 1) +
+    scale_x_log10() + # Log scale helps see the immune 'bump' better
+    theme_minimal() +
+    ggtitle(paste(s_name, "Gene Complexity by Sub-pool"))
+  
+  # Save these new views
+  ggsave(paste0("figures/", s_name, "_mito_ridge.png"), p3, width = 7, height = 8)
+  ggsave(paste0("figures/", s_name, "_feature_ridge.png"), p4, width = 7, height = 8)
   
   # 3. FILTER
   obj <- subset(obj, subset = nFeature_RNA > conf$min_feat & 

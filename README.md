@@ -71,6 +71,13 @@ In addition: Warning messages:
 2: Removed 1 row containing missing values or values outside the scale range
 (`geom_hline()`). 
 
+19.for git, i want to add figures/ to my .gitignore and then add my updated readme.md and code
+
+20. why do my violin plots have more than one x-value "identity" for some samples? D0 has one but the others days have 4, e.g. 58, 59, 60, 61 for my D9 untreated.
+
+21. yes, the ridge plot would be good because the violin plots are overplotted with the black stripplot on top. I want to keep seeing the sub-pools in QC violin/ridge plots of percent MT
+
+22. lets put those suggestions on pause and summarize the qc and filtering that we have done into a document that explains the project set up, git, r installl and project setup, data download with rsync, code steps (specific to PARSE) for non-computational biologists so they can do this on their own.
 
 
 ## Terminal linux commands
@@ -89,5 +96,15 @@ In addition: Warning messages:
 # Single-cell RNA-seq Analysis
 **Project Start Date:** 2026-01-19
 **Data Source:** PARPi treated bioprint. /Volumes/BCCResearch/danielc/BCC\ Bioprint\ Parse\ data/output_combined/7305_*
-**Goal:** Filter and cluster samples to identify cell populations. Then look at cell population and tumor pathway activity changes between treatment conditions.
-**Hypothesis:** PARPi reduces MYC pathway activity in treated tumor cells because cells with high MYC have more damage and can't survive PARPi.
+**Environment:** Mention you are using Seurat v5 and R 4.5.
+**The Task:** Analyzing 1.6M cells from Parse Evercode across Day 0 2D and 3D bioprinted tissues.
+**Goal:** Filter and cluster single cells from 4 samples to identify cell populations. 
+Then look at cell population and tumor pathway activity changes between treatment conditions.
+**Hypothesis:** PARPi reduces MYC pathway activity in treated tumor cells because cells with 
+high MYC have more damage and can't survive PARPi.
+**Reproducibility:** The script 01_qc_and_filtering.R generates the figures/ and the .h5ad files.
+
+## Technical QC Observations
+- **Sub-libraries:** Identified via Parse Pipeline metadata. 
+- **Visualization:** Used RidgePlots instead of standard Violin plots to avoid point-overplotting at the >1M cell scale.
+- **Thresholds:** Adaptive filtering was applied per sample (D0 vs 3D Tissues).
