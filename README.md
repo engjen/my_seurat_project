@@ -49,6 +49,27 @@ return(obj) Do i need to return the obj/pbmc??? what is lapply and function doij
 
 13. since the first column of meta is bc_wells, are you sure colnames(counts) <- meta[[1]]   is correct? how do i check if these are unique cell IDs or repeated well IDs?
 
+14. okay, I loaded the 4 samples into combined_pbmc. I have about 500K cells per sample, except day zero I have 150K. we had previously tried filtering the cells by number of genes or reads ( we used an "elbow plot"). but we ended up filtering out all of the immune cells because they are smaller and had less total DNA than the other cell types (epithelial, fibroblast, stromal and endothelial). what is the standard QC pipeline and does it account for cell size? also, just FYI, these are not 10x droplet reads but they are from PARSE bioscience which uses combinatorial barcoding and may have special QC considerations.
+
+15. I would like to QC each sample and save the filtered data. then maybe it will be small enough to combine for UMAP. at that point I can re-evaluate "sketching"... please remind me.
+
+16. yes, swap those in. also should I be saving each version of the code to git? i never set up my remote repo. also, my earlier plot of nCount versus nFeature_RNA (what exactly are those) showed D0 had higher nCount (1e5) and nFeature (10K). D0 was the 2D cell lines whereas the otehr days were 3D bioprinted tissues which might explain the difference. I worry that the 20K ceiling does not apply to D0 for doublets.
+
+17. i want to save in a format interoperable with python, not .rds. I want to save plots showing the data and thresholds applied for each sample.
+
+18. got these errors: Warning: Data is of class dgTMatrix. Coercing to dgCMatrix.
+Rasterizing points since number of points exceeds 100,000.
+To disable this behavior set `raster=FALSE`
+Warning: Default search for "data" layer in "RNA" assay yielded no results; utilizing "counts" layer instead.
+Error in (function (cond)  : 
+  error in evaluating the argument 'x' in selecting a method for function 't': The `slot` argument of `GetAssayData()` was deprecated in SeuratObject 5.0.0 and is
+now defunct.
+ℹ Please use the `layer` argument instead.
+In addition: Warning messages:
+1: In SingleExIPlot(type = type, data = data[, x, drop = FALSE], idents = idents,  :
+  All cells have the same value of percent.mt.
+2: Removed 1 row containing missing values or values outside the scale range
+(`geom_hline()`). 
 
 
 

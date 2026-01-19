@@ -2,3 +2,8 @@ data/
 .DS_Store
 *.Rproj
 .Rproj.user
+figures/
+.Rhistory
+.RData
+.Rproj.user/
+data/
