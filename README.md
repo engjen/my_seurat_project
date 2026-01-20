@@ -11,6 +11,66 @@ Objective: Use gemini to help set up a computational project without knowing how
 - use project folder with git
 - install R and run analysis in seurat
 
+## Links
+
+**[See my full conversation with Gemini](https://github.com/engjen/my_seurat_project/blob/main/Tutorial.md)**
+
+
+## Terminal linux commands
+
+- `ls` list files
+- `ls -la` list hidden files like .gitignore
+- `\tab` to auto complete
+- `cd` change directory
+- `cd ..` go up one directory
+- `mkdir` make directory
+- `rm` remove/delete a file
+- `rm -r` remove/delete a folder
+- `cp` copy a file
+- `rsync -avP /Volumes/BCCResearch/danielc/BCC\ Bioprint\ Parse\ data/output_combined/7305_D5__UNTR data/raw/` example rsync command.  *careful no trailing </> after the server path!*
+
+## Terminal git commands 
+
+`git status` Check which files have changed
+
+`git add .` Stage your changes (the . adds everything in the folder)
+
+`git commit -m "feat: finalize QC thresholds and lineage marker validation"` Create a permanent "Snapshot" with a descriptive message
+
+`git push origin main` 4. Push your local work to the cloud (GitHub/GitLab)
+
+### create .gitignore to ignore large files
+
+`touch .gitignore` In your terminal, navigate to your project root and create the file
+
+`echo "*.h5ad" >> .gitignore` Add .h5ad to your ignore list via terminal
+`echo "figures/" >> .gitignore`
+`echo "data/" >> .gitignore`
+
+`cat .gitignore` Verify it was added
+
+## PC instructions
+
+1. Install WSL: Open PowerShell as Administrator and type (Restart your computer when finished).
+
+`wsl --install` 
+
+2. Open Ubuntu: Find "Ubuntu" in your Start menu. Set your username and password.
+
+3. Install Tools: Inside the Ubuntu terminal, run
+
+`sudo apt update && sudo apt install git rsync -y` 
+
+4. How to use Rsync correctly on PC 
+
+`rsync -avzP --exclude '.git/' username@server_ip:/path/to/data/ ./data/` 
+
+5. Git Best Practices on WSL2
+
+`ssh-keygen -t ed25519 -C "your_email@example.com"
+cat ~/.ssh/id_ed25519.pub`
+
+
 ## My queries to gemini
 
 1. I have single cell RNA seq counts data that I want to filter, qc, and analyze in R studio. how do I download R studio onto my mac so I can use the latest version of seurat for analysis?
@@ -93,54 +153,12 @@ To disable this behavior set `raster=FALSE` Warning: Default search for "data" l
 
 28. yes can you create a new conda environment for this project, a jupyter notebook, and code for verifying metadata and downstream clustering and cell type analysis?
 
-## Terminal linux commands
-
-- `ls` list files
-- `ls -la` list hidden files like .gitignore
-- `\tab` to auto complete
-- `cd` change directory
-- `cd ..` go up one directory
-- `mkdir` make directory
-- `rm` remove/delete a file
-- `rm -r` remove/delete a folder
-- `cp` copy a file
-- `rsync -avP /Volumes/BCCResearch/danielc/BCC\ Bioprint\ Parse\ data/output_combined/7305_D5__UNTR data/raw/` example rsync command.  *careful no trailing </> after the server path!*
-
-## Terminal git commands 
-
-`git status` Check which files have changed
-
-`git add .` Stage your changes (the . adds everything in the folder)
-
-`git commit -m "feat: finalize QC thresholds and lineage marker validation"` Create a permanent "Snapshot" with a descriptive message
-
-`git push origin main` 4. Push your local work to the cloud (GitHub/GitLab)
-
-### create .gitignore to ignore large files
-
-`touch .gitignore` In your terminal, navigate to your project root and create the file
-
-`echo "*.h5ad" >> .gitignore` Add .h5ad to your ignore list via terminal
-`echo "figures/" >> .gitignore`
-`echo "data/" >> .gitignore`
-
-`cat .gitignore` Verify it was added
-
-## PC instructions
-
-`wsl --install` Install WSL: Open PowerShell as Administrator and type (Restart your computer when finished).
-
-Open Ubuntu: Find "Ubuntu" in your Start menu. Set your username and password.
-
-
-`sudo apt update && sudo apt install git rsync -y` Install Tools: Inside the Ubuntu terminal, run
-
-`rsync -avzP --exclude '.git/' username@server_ip:/path/to/data/ ./data/` download data
-
-`ssh-keygen -t ed25519 -C "your_email@example.com"
-cat ~/.ssh/id_ed25519.pub`
+29. what is the best way to use git and rsync on a PC? is it better to use the virutal machine plus ubuntu or powershell or ptty?
 
 # Single-cell RNA-seq Analysis
+
+Gemini helped me with this documentation.
+
 **Project Start Date:** 2026-01-19
 **Data Source:** PARPi treated bioprint. /Volumes/BCCResearch/danielc/BCC\ Bioprint\ Parse\ data/output_combined/7305_*
 **Environment:** Mention you are using Seurat v5 and R 4.5.

@@ -4,15 +4,20 @@ library(anndata)
 library(ggplot2)
 library(patchwork)
 library(ggplot2)
+library(DropletUtils)
+library(Matrix)
 
-# Define your adaptive thresholds again
-thresholds <- list(
-  "7305_D0"    = list(min_feat = 20, max_feat = 12000, max_mt = 15, max_count = 150000),
-  "7305_D5__UNTR" = list(min_feat = 20, max_feat = 8000,  max_mt = 15, max_count = 30000),
-  "7305_D9_OLAP" = list(min_feat = 20, max_feat = 8000,  max_mt = 15, max_count = 30000),
-  "7305_D9_UNTR" = list(min_feat = 20, max_feat = 8000,  max_mt = 15, max_count = 30000)
-)
+
+#global thresholds
 min_genes = 3
+# Define your adaptive thresholds 
+thresholds <- list(
+  "7305_D0"    = list(min_feat = 20, max_feat = 12000, max_mt = 15, max_count = 150000,min_count=800),
+  "7305_D5__UNTR" = list(min_feat = 20, max_feat = 8000,  max_mt = 15, max_count = 30000,min_count=800),
+  "7305_D9_OLAP" = list(min_feat = 20, max_feat = 8000,  max_mt = 15, max_count = 30000,min_count=800),
+  "7305_D9_UNTR" = list(min_feat = 20, max_feat = 8000,  max_mt = 15, max_count = 30000,min_count=800)
+)
+
 for (s_name in names(thresholds)) {
   message("Processing: ", s_name)
   conf <- thresholds[[s_name]]
@@ -36,30 +41,37 @@ for (s_name in names(thresholds)) {
   obj[["percent_mt"]] <- PercentageFeatureSet(obj, pattern = "^MT-|^mt-")
   
   # knee plot
-  # 1. Extract the UMI counts per cell (barcode)
-  counts_per_cell <- obj$nCount_RNA
+  # Use this line to get the counts matrix directly
+  # 'counts' is the standard layer name for raw data
+  raw_counts <- obj[["RNA"]]$counts 
   
-  # 2. Sort them in descending order
-  df_knee <- data.frame(
-    rank = 1:length(counts_per_cell),
-    counts = sort(counts_per_cell, decreasing = TRUE)
-  )
+  # Now run barcodeRanks using that matrix
+  knee_stats <- barcodeRanks(raw_counts)
   
-  # 3. Filter out absolute zeros (to avoid log10 infinity issues)
-  df_knee <- df_knee[df_knee$counts > 0, ]
+  # Ensure these are single numeric values
+  knee_val <- as.numeric(knee_stats@metadata$knee)
+  inflection_val <- as.numeric(knee_stats@metadata$inflection)
   
   k1 <- ggplot(df_knee, aes(x = rank, y = counts)) +
-    geom_line(size = 1, color = "steelblue") +
-    scale_x_log10() + 
-    scale_y_log10() +
-    geom_hline(yintercept = 200, color = "red", linetype = "dashed") + # Your min_feat floor
-    labs(
-      title = "Knee Plot: Cell Barcode Quality",
-      x = "Barcode Rank (Log10)",
-      y = "UMI Counts per Barcode (Log10)"
-    ) +
+    geom_line(color = "steelblue", linewidth = 1) +
+    scale_x_log10(labels = scales::comma) +
+    scale_y_log10(labels = scales::comma) +
+    # Adding the lines
+    geom_hline(yintercept = knee_val, linetype = "dashed", color = "darkgreen") +
+    geom_hline(yintercept = inflection_val, linetype = "dashed", color = "darkred") +
+    geom_hline(yintercept = conf$min_count, linetype = "dashed", color = "blue") +
+    # Using a simpler annotation method that avoids the 'y' aesthetic error
+    annotate("text", x = 10, y = knee_val * 1.5, label = "Knee", color = "darkgreen", fontface = "bold") +
+    annotate("text", x = 10, y = inflection_val * 1.5, label = "Inflection", color = "darkred", fontface = "bold") +
+    annotate("text", x = 10, y = conf$min_count * 0.5, label = "Cutoff USED", color = "blue", fontface = "bold") +
+    labs(title = "Barcode Rank (Knee) Plot",
+         #subtitle = paste("Knee:", round(knee_val), "| Inflection:", round(inflection_val)),
+         subtitle = paste("Knee:", round(knee_val), "| Inflection:", round(inflection_val),"| Cutoff USED:",round(conf$min_count)),
+         x = "Barcode Rank (Log10)",
+         y = "Total UMIs (Log10)") +
     theme_minimal()
   ggsave(paste0("figures/",  "qc_knee_plot",s_name,".png"), k1, width = 6, height = 6)
+  
   # 2. GENERATE AND SAVE QC PLOTS
   # We use layer="counts" for Seurat v5
   p1 <- FeatureScatter(obj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA",raster = TRUE) +
@@ -130,6 +142,7 @@ for (s_name in names(thresholds)) {
   # 3. FILTER by max count, max genes, max percent mito
   obj <- subset(obj, subset = nFeature_RNA > conf$min_feat & 
                   nFeature_RNA < conf$max_feat & 
+                  nCount_RNA > conf$min_count &
                   nCount_RNA < conf$max_count &
                   percent_mt < conf$max_mt)
   
@@ -183,8 +196,8 @@ for (s_name in names(thresholds)) {
     var = data.frame(gene_names = rownames(obj), row.names = rownames(obj))
   )
   adata$write_h5ad(paste0("data/processed/", s_name, "_filtered.h5ad"))
-  
+  #break
   rm(obj, adata, counts, count_layer, genes, meta, p1, p2, p3); gc()
-  break
+  
 }
   
