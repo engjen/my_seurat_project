@@ -8,3 +8,6 @@ figures/
 .Rproj.user/
 data/
 01_tutorial_files/
+ipynb_checkpoints/
+ipynb_checkpoints
+.ipynb_checkpoints
