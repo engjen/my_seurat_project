@@ -108,17 +108,24 @@ To disable this behavior set `raster=FALSE` Warning: Default search for "data" l
 
 ## Terminal git commands 
 
-# 1. Check which files have changed
-`git status`
+`git status` Check which files have changed
 
-# 2. Stage your changes (the . adds everything in the folder)
-`git add .``
+`git add .` Stage your changes (the . adds everything in the folder)
 
-# 3. Create a permanent "Snapshot" with a descriptive message
-`git commit -m "feat: finalize QC thresholds and lineage marker validation"`
+`git commit -m "feat: finalize QC thresholds and lineage marker validation"` Create a permanent "Snapshot" with a descriptive message
 
-# 4. Push your local work to the cloud (GitHub/GitLab)
-`git push origin main`
+`git push origin main` 4. Push your local work to the cloud (GitHub/GitLab)
+
+### create .gitignore to ignore large files
+
+`touch .gitignore` In your terminal, navigate to your project root and create the file
+
+`echo "*.h5ad" >> .gitignore` Add .h5ad to your ignore list via terminal
+`echo "figures/" >> .gitignore`
+`echo "data/" >> .gitignore`
+
+`cat .gitignore` Verify it was added
+
 
 # Single-cell RNA-seq Analysis
 **Project Start Date:** 2026-01-19
