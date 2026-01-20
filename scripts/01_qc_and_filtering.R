@@ -3,6 +3,7 @@ library(vroom)
 library(anndata)
 library(ggplot2)
 library(patchwork)
+library(ggplot2)
 
 # Define your adaptive thresholds again
 thresholds <- list(
@@ -34,6 +35,31 @@ for (s_name in names(thresholds)) {
   # Try both common patterns: ^MT- (Human) and ^mt- (Mouse)
   obj[["percent_mt"]] <- PercentageFeatureSet(obj, pattern = "^MT-|^mt-")
   
+  # knee plot
+  # 1. Extract the UMI counts per cell (barcode)
+  counts_per_cell <- obj$nCount_RNA
+  
+  # 2. Sort them in descending order
+  df_knee <- data.frame(
+    rank = 1:length(counts_per_cell),
+    counts = sort(counts_per_cell, decreasing = TRUE)
+  )
+  
+  # 3. Filter out absolute zeros (to avoid log10 infinity issues)
+  df_knee <- df_knee[df_knee$counts > 0, ]
+  
+  k1 <- ggplot(df_knee, aes(x = rank, y = counts)) +
+    geom_line(size = 1, color = "steelblue") +
+    scale_x_log10() + 
+    scale_y_log10() +
+    geom_hline(yintercept = 200, color = "red", linetype = "dashed") + # Your min_feat floor
+    labs(
+      title = "Knee Plot: Cell Barcode Quality",
+      x = "Barcode Rank (Log10)",
+      y = "UMI Counts per Barcode (Log10)"
+    ) +
+    theme_minimal()
+  ggsave(paste0("figures/",  "qc_knee_plot",s_name,".png"), k1, width = 6, height = 6)
   # 2. GENERATE AND SAVE QC PLOTS
   # We use layer="counts" for Seurat v5
   p1 <- FeatureScatter(obj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA",raster = TRUE) +
@@ -159,5 +185,6 @@ for (s_name in names(thresholds)) {
   adata$write_h5ad(paste0("data/processed/", s_name, "_filtered.h5ad"))
   
   rm(obj, adata, counts, count_layer, genes, meta, p1, p2, p3); gc()
-  #break
+  break
 }
+  
