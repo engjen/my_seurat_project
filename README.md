@@ -126,6 +126,19 @@ To disable this behavior set `raster=FALSE` Warning: Default search for "data" l
 
 `cat .gitignore` Verify it was added
 
+## PC instructions
+
+`wsl --install` Install WSL: Open PowerShell as Administrator and type (Restart your computer when finished).
+
+Open Ubuntu: Find "Ubuntu" in your Start menu. Set your username and password.
+
+
+`sudo apt update && sudo apt install git rsync -y` Install Tools: Inside the Ubuntu terminal, run
+
+`rsync -avzP --exclude '.git/' username@server_ip:/path/to/data/ ./data/` download data
+
+`ssh-keygen -t ed25519 -C "your_email@example.com"
+cat ~/.ssh/id_ed25519.pub`
 
 # Single-cell RNA-seq Analysis
 **Project Start Date:** 2026-01-19
