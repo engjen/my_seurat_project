@@ -106,6 +106,20 @@ To disable this behavior set `raster=FALSE` Warning: Default search for "data" l
 - `cp` copy a file
 - `rsync -avP /Volumes/BCCResearch/danielc/BCC\ Bioprint\ Parse\ data/output_combined/7305_D5__UNTR data/raw/` example rsync command.  *careful no trailing </> after the server path!*
 
+## Terminal git commands 
+
+# 1. Check which files have changed
+`git status`
+
+# 2. Stage your changes (the . adds everything in the folder)
+`git add .``
+
+# 3. Create a permanent "Snapshot" with a descriptive message
+`git commit -m "feat: finalize QC thresholds and lineage marker validation"`
+
+# 4. Push your local work to the cloud (GitHub/GitLab)
+`git push origin main`
+
 # Single-cell RNA-seq Analysis
 **Project Start Date:** 2026-01-19
 **Data Source:** PARPi treated bioprint. /Volumes/BCCResearch/danielc/BCC\ Bioprint\ Parse\ data/output_combined/7305_*
@@ -121,3 +135,20 @@ high MYC have more damage and can't survive PARPi.
 - **Sub-libraries:** Identified via Parse Pipeline metadata. 
 - **Visualization:** Used RidgePlots instead of standard Violin plots to avoid point-overplotting at the >1M cell scale.
 - **Thresholds:** Adaptive filtering was applied per sample (D0 vs 3D Tissues).
+
+## Steps
+
+### 1. QC & Filtering (R)
+- **Adaptive Thresholds:** Filtered Day 0 and 3D samples separately.
+- **Gene Filtering:** Used `min.cells = 3`. 
+- **Naming Fix:** Converted all gene names to use dashes (`-`) to avoid Seurat v5 Assay conflicts.
+- **Lineage Check:** Confirmed survival of EPCAM, VWF, ACTA2, and PTPRC.
+
+### 2. File Interoperability
+- **Format:** Saved as `.h5ad` using the `anndata` package.
+- **Warning Management:** Handled `dtype` and `log10` warnings by using `(x + 1)` scaling.
+
+### 3. Downstream Analysis (Python)
+- **Conda Env:** `scRNA_analysis` (Python 3.11).
+- **Strategy:** Computed UMAP/Clusters and saved metadata to CSV to avoid re-calculating on 1.6M cells.
+- **Results:** Confirmed Myeloid presence and T-Cell negative control.
